@@ -1,0 +1,22 @@
+# strimzi-application.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: strimzi-operator
+  namespace: argocd  # or the namespace where Argo CD is installed
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/camilo93/gitops.git'
+    targetRevision: main  # or the branch name
+    path: argo/apps/Strimzi/helm        # the folder name containing your Helm chart files
+    helm:
+      releaseName: strimzi-kafka-operator
+      skipCrds: false
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: kafka    # or any preferred namespace
+  syncPolicy:
+    automated:          # optional: enables auto-sync on changes
+      prune: true       # allows Argo CD to delete resources no longer defined in git
+      selfHeal: true    # if something is changed manually in the cluster, it reverts
